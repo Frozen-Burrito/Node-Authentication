@@ -1,14 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
-const { ensureAuthenticated } = require('../Config/auth');
+const { authView, protectedView } = require('../Middleware/auth');
 
-router.get('/', ( request, response ) => {
-    response.render('landing');
+router.get('/', ( req, res ) => {
+    res.render('landing');
 })
 
-router.get('/dashboard', ensureAuthenticated, ( request, response ) => {
-    response.render('dashboard', { name: request.user.name })
+router.get('/dashboard', authView, ( req, res ) => {
+    res.render('dashboard', { name: req.user.name })
+})
+
+router.get('/admin', protectedView('Admin'), ( req, res ) => {
+    res.render('adminPanel', { name: req.user.name });
 })
 
 module.exports = router;

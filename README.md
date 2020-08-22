@@ -17,7 +17,7 @@ The page will reload if you make edits.<br />
 
 ## What I've Learned
 
-My main purpose during this project is to practice with the MERN stack while learning more.
+My main purpose during this project is to practice fullstack web development using NodeJs.
 
 I've learned: 
 * Node

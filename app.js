@@ -1,31 +1,36 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 
-const mongoose = require('mongoose');
+const passport = require('passport');
+const session = require('express-session');
 
 const router = require('./Routes/index');
 const userRouter = require('./Routes/users');
 
-const passport = require('passport');
-const session = require('express-session');
+const connectMongoDB = require('./Config/connectMongoDB');
+const passportStrategy = require('./Config/passport');
 
 const app = express();
 
-require('./Config/passport')(passport);
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config({ path: '.env'})
+}
+
+// View Engine
+app.set('view engine', 'ejs');  
+app.use(expressLayouts);
 
 // Database config
-const dbKey = require('./Config/keys').MongoURI;
+connectMongoDB(process.env.MONGODB_URL);
 
-mongoose.connect(dbKey, { useNewUrlParser: true })
-    .then(() => console.log('DB connected'))
-    .catch( error  => console.log(error));
-
-// Templates
-app.use(expressLayouts);
-app.set('view engine', 'ejs');
+// Static Files
+app.use(express.static('Public'));
 
 // Bodyparser
 app.use(express.urlencoded({ extended: false }));
+
+// Auth
+passportStrategy(passport);
 
 app.use(session({
     secret: 'A secret',
@@ -40,7 +45,7 @@ app.use(passport.session());
 app.use('/', router);
 app.use('/users', userRouter);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, console.log(`Server on port ${PORT}`));
 

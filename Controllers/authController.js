@@ -3,24 +3,24 @@ const passport = require('passport');
 
 const User = require('../Models/User');
 
-const login_page = ( request, response) => {
-    response.render('login');
+const login_page = ( req, res) => {
+    res.render('login');
 }
 
-const login_handle = ( request, response, next ) => {
+const login_handle = ( req, res, next ) => {
     passport.authenticate('local', {
         successRedirect: '/dashboard',
         failureRedirect: '/users/login',
 
-    }) ( request, response, next );
+    }) ( req, res, next );
 }
 
-const register_page = ( request, response ) => {
-    response.render('register');
+const register_page = ( req, res ) => {
+    res.render('register');
 }
 
-const register_handle = ( request, response ) => {
-    const { name, email, password, password2 } = request.body;
+const register_handle = ( req, res ) => {
+    const { name, email, password, password2 } = req.body;
     let formErrors = [];
 
     if (!name || !email || !password || !password2) {
@@ -45,7 +45,7 @@ const register_handle = ( request, response ) => {
             password2
         }
 
-        response.render('register', context);
+        res.render('register', context);
     } else {
         
         // Check if user exists
@@ -53,7 +53,7 @@ const register_handle = ( request, response ) => {
             .then(user => {
                 if (user) {
                     formErrors.push({ msg: 'Email is already registered' });
-                    response.render('register', {
+                    res.render('register', {
                         formErrors,
                         name,
                         email,
@@ -74,7 +74,7 @@ const register_handle = ( request, response ) => {
                             newUser.password = hash;
                             newUser.save()
                                 .then( createdUser => {
-                                    response.redirect('/users/login');
+                                    res.redirect('/users/login');
                                 })
                                 .catch( error => console.log(error));
                         })
@@ -87,9 +87,9 @@ const register_handle = ( request, response ) => {
     }
 }
 
-const logout_handle = ( request, response ) => {
-    request.logout();
-    response.redirect('/users/login');
+const logout_handle = ( req, res ) => {
+    req.logout();
+    res.redirect('/users/login');
 }
 
 module.exports = {
