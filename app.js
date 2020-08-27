@@ -6,6 +6,8 @@ const session = require('express-session');
 
 const router = require('./Routes/index');
 const userRouter = require('./Routes/users');
+const itemRouter = require('./Routes/items');
+const categoryRouter = require('./Routes/categories');
 
 const connectMongoDB = require('./Config/connectMongoDB');
 const passportStrategy = require('./Config/passport');
@@ -29,6 +31,8 @@ app.use(express.static('Public'));
 // Bodyparser
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.json());
+
 // Auth
 passportStrategy(passport);
 
@@ -41,9 +45,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// App Routes
-app.use('/', router);
-app.use('/users', userRouter);
+// API Routes
+app.use('/api/v1', router);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/items', itemRouter);
+app.use('/api/v1/categories', categoryRouter);
 
 const PORT = process.env.PORT || 3000;
 
